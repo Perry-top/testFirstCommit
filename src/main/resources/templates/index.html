@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>layout 后台大布局 - Layui</title>
+    <link rel="stylesheet" th:href="@{{path}/static/layui/css/layui.css(path=${#httpServletRequest.getContextPath()})}">
+    <link rel="stylesheet" th:href="@{{path}/static/easyui/default/easyui.css(path=${#httpServletRequest.getContextPath()})}">
+    <script th:src="@{{path}/static/jquery-1.10.2.min.js(path=${#httpServletRequest.getContextPath()})}"
+            type="text/javascript"></script>
+    <script th:src="@{{path}/static/easyui/jquery.easyui.min.js(path=${#httpServletRequest.getContextPath()})}"
+            type="text/javascript"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">layui 后台布局</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="logout.html">退了</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test" id="left-menu">
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" id="main" style="padding-top:20px">
+        <!-- 内容主体区域 -->
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script th:src="@{{path}/static/layui/layui.js (path=${#httpServletRequest.getContextPath()})}"></script>
+
+
+<script type="text/javascript" th:inline="javascript">
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+        var str = "";//
+        $.ajax({
+            url: "/side.html",
+            method: "post",
+            success: function (json) {
+                window.permission=json.perms;
+                $.each(json.menus, function (i, obj) {
+                    str += '<li class="layui-nav-item layui-nav-itemed">';
+                    if (obj.type == 2) {
+                        str += '<a class="" href="javascript:;" onclick="openRight(\'' + obj.url + '\')">' + obj.name + '</a>';
+                    } else {
+                        str += '<a class="" href="javascript:;">' + obj.name + '</a>';
+                    }
+
+                    if (obj.children.length > 0) {
+                        makeMenu(obj.children)
+                    }
+                    str += '</li>'
+                });
+                $("#left-menu").html(str);
+                //console.log(str);
+                element.render()
+            }
+        })
+
+        function makeMenu(menuList) {
+            str += '<dl class="layui-nav-child">';
+            $.each(menuList, function (j, c) {
+                str += '<dd>'
+                if (c.type == 2) {
+                    str += '<a href="javascript:;" onclick="openRight(\'' + c.url + '\')">' + c.name + '</a>';
+                } else {
+                    str += '<a href="javascript:;">' + c.name + '</a>'
+                }
+                if (c.children.length > 0) {
+                    makeMenu(c.children)
+                }
+                str += '</dd>'
+            })
+            str += '</dl>'
+        }
+
+    });
+
+    function openRight(url) {
+        $("#main").load(url)
+    }
+    function hasPermission(str) {
+        if (window.permission.indexOf(str) > -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+#spring.datasource.url = jdbc:mysql://localhost:3306/test?characterEncoding=utf-8
+#spring.datasource.username = root
+#spring.datasource.password =
+#spring.datasource.driverClassName = com.mysql.jdbc.Driver
+
+spring:
+  datasource:
+    username: sa
+    url: jdbc:sqlserver://127.0.0.1:1433;database=DAZUINVO_DB
+    password: 123456
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+    servlet:
+      content-type: text/html
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/pages/
+#      suffix: .jsp
+  mvc:
+    static-path-pattern: /static/**
+mybatis:
+  mapper-locations: classpath*:com/test/admin/dao/mapper/*.xml
+  type-aliases-package: com.test.admin.pojo

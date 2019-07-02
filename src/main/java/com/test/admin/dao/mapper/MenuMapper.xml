@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.admin.dao.MenuDAO">
+
+<sql id="get-menu">
+    SELECT ID, NAME, PARENT_ID parentId, URL, PERMS, TYPE, SORT FROM menu
+</sql>
+
+    <select id="getAllMenu" resultType="Menu">
+        <include refid="get-menu"/>
+    </select>
+
+    <select id="getMenuById" parameterType="int" resultType="Menu">
+        <include refid="get-menu"/>
+        where id=#{id}
+    </select>
+    <delete id="deleteMenu" parameterType="int">
+        delete from menu where id=#{id}
+    </delete>
+
+    <select id="getMenuCountByParentId" parameterType="int" resultType="int">
+        select count(id) from menu WHERE parent_id=#{parentId}
+    </select>
+
+    <insert id="addMenu" parameterType="Menu">
+        INSERT INTO menu
+        (NAME, PARENT_ID, URL, PERMS, TYPE, SORT)
+        VALUES(#{name}, #{parentId}, #{url}, #{perms}, #{type}, #{sort});
+    </insert>
+
+    <update id="updateMenu" parameterType="Menu">
+        update MENU
+        <set>
+            PARENT_ID=#{parentId},
+            URL=#{url},
+            <if test="name!=null and name!=''">NAME=#{name},</if>
+            <if test="perms!=null and perms!=''">PERMS=#{perms},</if>
+            <if test="sort!=null">SORT=#{sort}</if>
+        </set>
+        where ID=#{id}
+    </update>
+
+    <select id="getUserMenu" parameterType="int" resultType="Menu">
+        SELECT distinct(m.ID), m.NAME, m.PARENT_ID parentId, m.URL, m.TYPE, m.SORT,m.perms
+        FROM menu m
+            inner join role_menu rm on m.ID=rm.MENU_ID
+            inner join user_role ur on ur.ROLE_ID=rm.ROLE_ID
+            INNER JOIN role r ON r.id = ur.ROLE_ID
+        where ur.USER_ID=#{userId} AND r.status = 1
+    </select>
+
+
+</mapper>
+    
